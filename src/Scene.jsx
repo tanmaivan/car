@@ -12,6 +12,7 @@ import { Rain } from "./Rain";
 import { Snow } from "./Snow";
 import WeatherSound from "./WeatherSound";
 import { useLevaControls } from "./useLevaControls";
+import { Helicopter } from "./Helicopter";
 
 export function Scene() {
     const [thirdPerson, setThirdPerson] = useState(false);
@@ -55,6 +56,12 @@ export function Scene() {
             {/* Thành phần chính */}
             <Car thirdPerson={thirdPerson} />
             <ScatteredObjects />
+            <Helicopter 
+                center={[-2.64, 0, 0.03]}  
+                radius={3}                 
+                height={1.7}               
+                speed={0.3}                
+            />
 
             <WeatherSound
                 playRain={weather.showRain}
