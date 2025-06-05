@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useAudio } from "./useAudio";
+import { useLevaControls } from "./useLevaControls";
 
 export const useControls = (vehicleApi, chassisApi) => {
     let [controls, setControls] = useState({});
     const { playEngineSound, playCollisionSound } = useAudio();
+    const { carPhysics } = useLevaControls();
 
     useEffect(() => {
         const keyDownPressHandler = (e) => {
@@ -32,12 +34,12 @@ export const useControls = (vehicleApi, chassisApi) => {
         if (!vehicleApi || !chassisApi) return;
 
         if (controls.w) {
-            vehicleApi.applyEngineForce(150, 2);
-            vehicleApi.applyEngineForce(150, 3);
+            vehicleApi.applyEngineForce(carPhysics.engineForce, 2);
+            vehicleApi.applyEngineForce(carPhysics.engineForce, 3);
             playEngineSound();
         } else if (controls.s) {
-            vehicleApi.applyEngineForce(-150, 2);
-            vehicleApi.applyEngineForce(-150, 3);
+            vehicleApi.applyEngineForce(-carPhysics.engineForce, 2);
+            vehicleApi.applyEngineForce(-carPhysics.engineForce, 3);
             playEngineSound();
         } else {
             vehicleApi.applyEngineForce(0, 2);
@@ -45,15 +47,15 @@ export const useControls = (vehicleApi, chassisApi) => {
         }
 
         if (controls.a) {
-            vehicleApi.setSteeringValue(0.35, 2);
-            vehicleApi.setSteeringValue(0.35, 3);
-            vehicleApi.setSteeringValue(-0.1, 0);
-            vehicleApi.setSteeringValue(-0.1, 1);
+            vehicleApi.setSteeringValue(carPhysics.steeringValue, 2);
+            vehicleApi.setSteeringValue(carPhysics.steeringValue, 3);
+            vehicleApi.setSteeringValue(-carPhysics.steeringValue * 0.3, 0);
+            vehicleApi.setSteeringValue(-carPhysics.steeringValue * 0.3, 1);
         } else if (controls.d) {
-            vehicleApi.setSteeringValue(-0.35, 2);
-            vehicleApi.setSteeringValue(-0.35, 3);
-            vehicleApi.setSteeringValue(0.1, 0);
-            vehicleApi.setSteeringValue(0.1, 1);
+            vehicleApi.setSteeringValue(-carPhysics.steeringValue, 2);
+            vehicleApi.setSteeringValue(-carPhysics.steeringValue, 3);
+            vehicleApi.setSteeringValue(carPhysics.steeringValue * 0.3, 0);
+            vehicleApi.setSteeringValue(carPhysics.steeringValue * 0.3, 1);
         } else {
             for (let i = 0; i < 4; i++) {
                 vehicleApi.setSteeringValue(0, i);
@@ -83,7 +85,14 @@ export const useControls = (vehicleApi, chassisApi) => {
             chassisApi.angularVelocity.set(0, 0, 0);
             chassisApi.rotation.set(0, 0, 0);
         }
-    }, [controls, vehicleApi, chassisApi, playEngineSound, playCollisionSound]);
+    }, [
+        controls,
+        vehicleApi,
+        chassisApi,
+        playEngineSound,
+        playCollisionSound,
+        carPhysics,
+    ]);
 
     return controls;
 };

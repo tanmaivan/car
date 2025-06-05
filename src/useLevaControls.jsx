@@ -10,6 +10,38 @@ export function useLevaControls() {
         snowIntensity: { value: 200, min: 50, max: 1000, step: 50 },
     });
 
+    // Car physics controls
+    const carPhysicsControls = useControls("Car Physics", {
+        engineForce: {
+            value: 150,
+            min: 50,
+            max: 300,
+            step: 10,
+            label: "Engine Force",
+        },
+        steeringValue: {
+            value: 0.35,
+            min: 0.1,
+            max: 0.5,
+            step: 0.05,
+            label: "Steering Value",
+        },
+        suspensionStiffness: {
+            value: 60,
+            min: 30,
+            max: 100,
+            step: 5,
+            label: "Suspension Stiffness",
+        },
+        frictionSlip: {
+            value: 5,
+            min: 1,
+            max: 10,
+            step: 0.5,
+            label: "Friction Slip",
+        },
+    });
+
     // Car model controls
     const [selectedModel, setSelectedModel] = useState("Car 1");
     const carModelControls = useControls("Car Models", {
@@ -52,6 +84,7 @@ export function useLevaControls() {
 
     return {
         weather: weatherControls,
+        carPhysics: carPhysicsControls,
         carModel: {
             selectedModel,
             setSelectedModel,
