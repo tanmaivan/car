@@ -1,8 +1,9 @@
 import { useRef, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useBox, useSphere } from "@react-three/cannon";
+import { useCylinder, useSphere, useBox } from "@react-three/cannon";
 import { useLevaControls } from "./useLevaControls";
-import { useTexture } from "@react-three/drei";
+import { useTexture, useGLTF } from "@react-three/drei";
+import { MovingObstacle } from "./MovingObstacle";
 
 // Danh sách màu sắc đa dạng
 const COLORS = [
@@ -61,26 +62,57 @@ const PLANETS = {
     },
 };
 
-function Box({ position, size = [0.3, 0.3, 0.3] }) {
-    const [ref] = useBox(() => ({
-        mass: 1,
+// Các loại thùng phi khác nhau
+const BARRELS = {
+    red: {
+        texture: "/textures/red_barrel.jpg",
+        mass: 1.2,
+        restitution: 0.3,
+        friction: 0.8,
+    },
+    brown: {
+        texture: "/textures/brown_barrel.jpg",
+        mass: 1.0,
+        restitution: 0.4,
+        friction: 0.7,
+    },
+    gray: {
+        texture: "/textures/gray_barrel.jpg",
+        mass: 1.1,
+        restitution: 0.35,
+        friction: 0.75,
+    },
+};
+
+function Barrel({ position }) {
+    // Chọn ngẫu nhiên một loại thùng phi
+    const barrelKeys = Object.keys(BARRELS);
+    const randomBarrel =
+        BARRELS[barrelKeys[Math.floor(Math.random() * barrelKeys.length)]];
+
+    const [ref] = useCylinder(() => ({
+        mass: randomBarrel.mass,
         position,
-        args: size,
+        args: [0.2, 0.2, 0.6, 16], // [radiusTop, radiusBottom, height, segments]
+        restitution: randomBarrel.restitution,
+        friction: randomBarrel.friction,
     }));
 
-    // Chọn ngẫu nhiên 1 màu
-    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const texture = useTexture(randomBarrel.texture);
 
     return (
         <mesh ref={ref} castShadow>
-            <boxGeometry args={size} />
-            <meshStandardMaterial color={color} />
+            <cylinderGeometry args={[0.2, 0.2, 0.6, 16]} />
+            <meshStandardMaterial
+                map={texture}
+                roughness={0.7}
+                metalness={0.2}
+            />
         </mesh>
     );
 }
 
 function Sphere({ position, radius = 0.2 }) {
-    // Chọn ngẫu nhiên một hành tinh
     const planetKeys = Object.keys(PLANETS);
     const randomPlanet =
         PLANETS[planetKeys[Math.floor(Math.random() * planetKeys.length)]];
@@ -106,40 +138,40 @@ function Sphere({ position, radius = 0.2 }) {
 export function ScatteredObjects() {
     const [objects, setObjects] = useState([]);
     const { obstacles } = useLevaControls();
-    const lastBoxCount = useRef(obstacles.boxCount);
+    const lastBarrelCount = useRef(obstacles.boxCount);
     const lastSphereCount = useRef(obstacles.sphereCount);
     const lastClearAll = useRef(obstacles.clearAll);
 
     useEffect(() => {
-        // Handle box count change
-        if (obstacles.boxCount !== lastBoxCount.current) {
-            const currentBoxes = objects.filter(
-                (obj) => obj.type === "box"
+        // Handle barrel count change
+        if (obstacles.boxCount !== lastBarrelCount.current) {
+            const currentBarrels = objects.filter(
+                (obj) => obj.type === "barrel"
             ).length;
-            const diff = obstacles.boxCount - currentBoxes;
+            const diff = obstacles.boxCount - currentBarrels;
 
             if (diff > 0) {
-                // Add boxes
-                const newBoxes = Array(diff)
+                // Add barrels
+                const newBarrels = Array(diff)
                     .fill()
                     .map(() => ({
-                        type: "box",
+                        type: "barrel",
                         position: [
                             Math.random() * 10 - 5,
                             0.3,
                             Math.random() * 10 - 5,
                         ],
                     }));
-                setObjects((prev) => [...prev, ...newBoxes]);
+                setObjects((prev) => [...prev, ...newBarrels]);
             } else if (diff < 0) {
-                // Remove boxes
+                // Remove barrels
                 setObjects((prev) => {
-                    const boxes = prev.filter((obj) => obj.type === "box");
-                    const others = prev.filter((obj) => obj.type !== "box");
-                    return [...others, ...boxes.slice(0, obstacles.boxCount)];
+                    const barrels = prev.filter((obj) => obj.type === "barrel");
+                    const others = prev.filter((obj) => obj.type !== "barrel");
+                    return [...others, ...barrels.slice(0, obstacles.boxCount)];
                 });
             }
-            lastBoxCount.current = obstacles.boxCount;
+            lastBarrelCount.current = obstacles.boxCount;
         }
 
         // Handle sphere count change
@@ -185,9 +217,12 @@ export function ScatteredObjects() {
 
     return (
         <>
+            {/* Luôn hiển thị chướng ngại vật di chuyển */}
+            <MovingObstacle position={[0, 0, 0]} />
+
             {objects.map((obj, index) => {
-                if (obj.type === "box") {
-                    return <Box key={index} position={obj.position} />;
+                if (obj.type === "barrel") {
+                    return <Barrel key={index} position={obj.position} />;
                 } else if (obj.type === "sphere") {
                     return <Sphere key={index} position={obj.position} />;
                 }

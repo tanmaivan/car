@@ -38,7 +38,7 @@ export function useLevaControls() {
             min: 0,
             max: 20,
             step: 1,
-            label: "Number of Boxes",
+            label: "Number of Barrels",
         },
         sphereCount: {
             value: 0,
@@ -47,7 +47,7 @@ export function useLevaControls() {
             step: 1,
             label: "Number of Spheres",
         },
-        clearAll: { value: false, label: "Clear All", button: true, order: 3 },
+        clearAll: { value: false, label: "Clear All" },
     });
 
     return {
