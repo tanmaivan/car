@@ -35,7 +35,7 @@ export function Scene({ onCameraModeChange }) {
     ];
 
     // Add state for day/night cycle
-    const [isDay, setIsDay] = useState(false);
+    const [isDay, setIsDay] = useState(true);
     
     // Add spring animation for sun intensity and ambient light
     const { sunIntensity, ambientIntensity } = useSpring({
