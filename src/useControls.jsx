@@ -4,7 +4,7 @@ import { useLevaControls } from "./useLevaControls";
 
 export const useControls = (vehicleApi, chassisApi) => {
     let [controls, setControls] = useState({});
-    const { playEngineSound, playCollisionSound } = useAudio();
+    const { playEngineSound, playCollisionSound, playHornSound } = useAudio();
     const { carPhysics } = useLevaControls();
 
     useEffect(() => {
@@ -32,6 +32,20 @@ export const useControls = (vehicleApi, chassisApi) => {
 
     useEffect(() => {
         if (!vehicleApi || !chassisApi) return;
+
+        if (controls.e) {
+            for (let i = 0; i < 4; i++) {
+                vehicleApi.setBrake(10, i);
+            }
+        } else {
+            for (let i = 0; i < 4; i++) {
+                vehicleApi.setBrake(0, i);
+            }
+        }
+
+        if (controls.q) {
+            playHornSound();
+        }
 
         if (controls.w) {
             vehicleApi.applyEngineForce(carPhysics.engineForce, 2);
@@ -91,6 +105,7 @@ export const useControls = (vehicleApi, chassisApi) => {
         chassisApi,
         playEngineSound,
         playCollisionSound,
+        playHornSound,
         carPhysics,
     ]);
 

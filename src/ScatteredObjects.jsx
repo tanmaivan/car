@@ -20,51 +20,45 @@ const COLORS = [
 const PLANETS = {
     mercury: {
         texture: "/textures/planets/2k_mercury.jpg",
-        mass: 0.38, // Khối lượng so với Trái Đất
-        restitution: 0.3, // Độ nảy thấp
-        friction: 0.8, // Ma sát cao
+        mass: 0.38,
+        restitution: 0.2,
+        friction: 0.9,
     },
     venus: {
         texture: "/textures/planets/2k_venus_surface.jpg",
         mass: 0.91,
-        restitution: 0.2,
-        friction: 0.9,
-        radius: 0.2375, // 0.95 / 4
+        restitution: 0.1,
+        friction: 0.95,
     },
     mars: {
         texture: "/textures/planets/2k_mars.jpg",
         mass: 0.38,
         restitution: 0.4,
         friction: 0.7,
-        radius: 0.1325, // 0.53 / 4
     },
     jupiter: {
         texture: "/textures/planets/2k_jupiter.jpg",
         mass: 2.5,
-        restitution: 0.6,
-        friction: 0.3,
-        radius: 2.8, // 11.2 / 4
+        restitution: 0.8,
+        friction: 0.2,
     },
     saturn: {
         texture: "/textures/planets/2k_saturn.jpg",
         mass: 1.1,
-        restitution: 0.5,
-        friction: 0.4,
-        radius: 2.3625, // 9.45 / 4
+        restitution: 0.7,
+        friction: 0.3,
     },
     uranus: {
         texture: "/textures/planets/2k_uranus.jpg",
         mass: 0.9,
-        restitution: 0.7,
-        friction: 0.2,
-        radius: 1.0, // 4.0 / 4
+        restitution: 0.6,
+        friction: 0.4,
     },
     neptune: {
         texture: "/textures/planets/2k_neptune.jpg",
         mass: 1.1,
-        restitution: 0.6,
-        friction: 0.3,
-        radius: 0.97, // 3.88 / 4
+        restitution: 0.5,
+        friction: 0.5,
     },
 };
 
@@ -76,8 +70,8 @@ const BARRELS = {
         restitution: 0.3,
         friction: 0.8,
         size: {
-            radius: 0.0625, // 0.25 / 4
-            height: 0.2, // 0.8 / 4
+            radius: 0.0625,
+            height: 0.2,
         },
     },
     brown: {
@@ -86,8 +80,8 @@ const BARRELS = {
         restitution: 0.4,
         friction: 0.7,
         size: {
-            radius: 0.05, // 0.2 / 4
-            height: 0.15, // 0.6 / 4
+            radius: 0.05,
+            height: 0.15,
         },
     },
     gray: {
@@ -96,8 +90,8 @@ const BARRELS = {
         restitution: 0.35,
         friction: 0.75,
         size: {
-            radius: 0.055, // 0.22 / 4
-            height: 0.175, // 0.7 / 4
+            radius: 0.055,
+            height: 0.175,
         },
     },
 };
@@ -147,17 +141,10 @@ function Sphere({ position, radius = 0.2 }) {
     const randomPlanet =
         PLANETS[planetKeys[Math.floor(Math.random() * planetKeys.length)]];
 
-    // Tính toán vị trí y dựa trên bán kính của hành tinh
-    const adjustedPosition = [
-        position[0],
-        radius * randomPlanet.radius, // Đặt vị trí y bằng bán kính để hành tinh nằm trên mặt đất
-        position[2],
-    ];
-
     const [ref] = useSphere(() => ({
         mass: randomPlanet.mass,
-        position: adjustedPosition,
-        args: [radius * randomPlanet.radius],
+        position,
+        args: [radius],
         restitution: randomPlanet.restitution,
         friction: randomPlanet.friction,
     }));
@@ -166,7 +153,7 @@ function Sphere({ position, radius = 0.2 }) {
 
     return (
         <mesh ref={ref} castShadow>
-            <sphereGeometry args={[radius * randomPlanet.radius, 32, 32]} />
+            <sphereGeometry args={[radius, 32, 32]} />
             <meshStandardMaterial map={texture} />
         </mesh>
     );
@@ -226,7 +213,7 @@ export function ScatteredObjects() {
                         type: "sphere",
                         position: [
                             Math.random() * 10 - 5,
-                            0, // Vị trí y ban đầu là 0, sẽ được điều chỉnh trong component Sphere
+                            5, // Thay đổi vị trí y từ 0.2 thành 5 để hành tinh xuất hiện từ trên cao
                             Math.random() * 10 - 5,
                         ],
                     }));

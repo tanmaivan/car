@@ -10,6 +10,7 @@ export function useAudio() {
         collisionSound: new Audio(
             process.env.PUBLIC_URL + "/audio/collision.mp3"
         ),
+        hornSound: new Audio(process.env.PUBLIC_URL + "/audio/horn.mp3"),
     });
 
     const { audio } = useLevaControls();
@@ -19,10 +20,13 @@ export function useAudio() {
         audioRef.current.backgroundMusic.volume = audio.backgroundVolume;
         audioRef.current.engineSound.volume = audio.engineVolume;
         audioRef.current.collisionSound.volume = audio.collisionVolume;
+        audioRef.current.hornSound.volume = audio.engineVolume;
 
         // Handle background music play/pause
         if (audio.playBackground) {
-            audioRef.current.backgroundMusic.play();
+            audioRef.current.backgroundMusic.play().catch((error) => {
+                console.log("Error playing background music:", error);
+            });
         } else {
             audioRef.current.backgroundMusic.pause();
         }
@@ -44,14 +48,20 @@ export function useAudio() {
         audio.playBackground,
     ]);
 
+    const playSound = (sound) => {
+        try {
+            sound.currentTime = 0;
+            sound.play().catch((error) => {
+                console.log("Error playing sound:", error);
+            });
+        } catch (error) {
+            console.log("Error with sound:", error);
+        }
+    };
+
     return {
-        playEngineSound: () => {
-            audioRef.current.engineSound.currentTime = 0;
-            audioRef.current.engineSound.play();
-        },
-        playCollisionSound: () => {
-            audioRef.current.collisionSound.currentTime = 0;
-            audioRef.current.collisionSound.play();
-        },
+        playEngineSound: () => playSound(audioRef.current.engineSound),
+        playCollisionSound: () => playSound(audioRef.current.collisionSound),
+        playHornSound: () => playSound(audioRef.current.hornSound),
     };
 }

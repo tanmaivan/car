@@ -26,6 +26,7 @@ function App() {
                     }}
                 >
                     <p>press w a s d to move</p>
+                    <p>press e to brake, q to honk horn</p>
                     <p>
                         press j: orbit camera, k: perspective camera, l: free
                         camera, i: top-down camera
