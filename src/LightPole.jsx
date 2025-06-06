@@ -17,6 +17,7 @@ export function LightPole({
 }) {
     const lightPoleRef = useRef();
     const lightRef = useRef();
+    const spotlightRef = useRef(null); // Add ref for the spotlight
     const { scene: threeScene } = useThree();
     const { scene } = useLoader(GLTFLoader, '/models/wooden_light_pole.glb');
 
@@ -29,44 +30,75 @@ export function LightPole({
         mass: 0,
     }));
 
+    // Create the spotlight on component mount
     useEffect(() => {
-        const light = new SpotLight(
-            0xffffff, // color
-            lightIntensity, // intensity
-            lightDistance, // distance
-            angle, // angle
-            penumbra, // penumbra
-            1 // decay
-        );
-        
-        // Add shadow configuration
-        light.castShadow = castShadow;
-        light.shadow.mapSize.width = 1024;
-        light.shadow.mapSize.height = 1024;
-        light.shadow.camera.near = 1;
-        light.shadow.camera.far = 400;
-        light.shadow.camera.fov = 30;
-        light.shadow.bias = -0.005;
-        
-        // Calculate light position relative to pole position
-        const lightX = position[0] - 35;  // pole x - 35
-        const lightY = position[1] + 350;  // pole y + 350
-        const lightZ = position[2];        // same as pole z
-        
-        // Calculate target position relative to light position
-        const targetX = lightX - 165;  // light x - 165
-        const targetY = position[1];    // back to pole height
-        const targetZ = lightZ;         // same z
-        
-        light.position.set(lightX, lightY, lightZ);
-        light.target.position.set(targetX, targetY, targetZ);
-        
-        lightPoleRef.current.add(light);
-        lightPoleRef.current.add(light.target);
+        if (!lightPoleRef.current) return;
 
-        // Add SpotLightHelper
-        if (showHelper) {
-            const helper = new SpotLightHelper(light);
+        // Create spotlight if it doesn't exist
+        if (!spotlightRef.current) {
+            const light = new SpotLight(
+                0xffffff,
+                lightIntensity,
+                lightDistance,
+                angle,
+                penumbra,
+                1
+            );
+            
+            // Configure shadows
+            light.castShadow = castShadow;
+            light.shadow.mapSize.width = 1024;
+            light.shadow.mapSize.height = 1024;
+            light.shadow.camera.near = 1;
+            light.shadow.camera.far = 400;
+            light.shadow.camera.fov = 30;
+            light.shadow.bias = -0.005;
+            
+            // Calculate positions
+            const lightX = position[0] - 35;
+            const lightY = position[1] + 350;
+            const lightZ = position[2];
+            const targetX = lightX - 165;
+            const targetY = position[1];
+            const targetZ = lightZ;
+            
+            // Set positions
+            light.position.set(lightX, lightY, lightZ);
+            light.target.position.set(targetX, targetY, targetZ);
+            
+            // Store reference
+            spotlightRef.current = light;
+            
+            // Add to scene
+            lightPoleRef.current.add(light);
+            lightPoleRef.current.add(light.target);
+        }
+
+        // Clean up function
+        return () => {
+            if (spotlightRef.current) {
+                lightPoleRef.current?.remove(spotlightRef.current);
+                lightPoleRef.current?.remove(spotlightRef.current.target);
+                spotlightRef.current = null;
+            }
+        };
+    }, [lightPoleRef.current]); // Only run once when component mounts
+
+    // Update light properties when they change
+    useEffect(() => {
+        if (!spotlightRef.current) return;
+
+        spotlightRef.current.intensity = lightIntensity;
+        spotlightRef.current.distance = lightDistance;
+        spotlightRef.current.angle = angle;
+        spotlightRef.current.penumbra = penumbra;
+        spotlightRef.current.castShadow = castShadow;
+    }, [lightIntensity, lightDistance, angle, penumbra, castShadow]);
+
+    // Add SpotLightHelper
+    useEffect(() => {
+        if (showHelper && spotlightRef.current) {
+            const helper = new SpotLightHelper(spotlightRef.current);
             threeScene.add(helper);
             lightRef.current = helper;
 
@@ -83,7 +115,7 @@ export function LightPole({
                 threeScene.remove(lightRef.current);
             }
         };
-    }, [lightIntensity, lightDistance, angle, penumbra, showHelper, threeScene, castShadow, position]);
+    }, [showHelper, threeScene]);
 
     return (
         <>
