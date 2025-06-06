@@ -19,43 +19,43 @@ const COLORS = [
 // Định nghĩa các hành tinh và thuộc tính của chúng
 const PLANETS = {
     mercury: {
-        texture: "/solar_textures/2k_mercury.jpg",
+        texture: "/textures/planets/2k_mercury.jpg",
         mass: 0.38, // Khối lượng so với Trái Đất
         restitution: 0.3, // Độ nảy thấp
         friction: 0.8, // Ma sát cao
     },
     venus: {
-        texture: "/solar_textures/2k_venus_surface.jpg",
+        texture: "/textures/planets/2k_venus_surface.jpg",
         mass: 0.91,
         restitution: 0.2,
         friction: 0.9,
     },
     mars: {
-        texture: "/solar_textures/2k_mars.jpg",
+        texture: "/textures/planets/2k_mars.jpg",
         mass: 0.38,
         restitution: 0.4,
         friction: 0.7,
     },
     jupiter: {
-        texture: "/solar_textures/2k_jupiter.jpg",
+        texture: "/textures/planets/2k_jupiter.jpg",
         mass: 2.5,
         restitution: 0.6,
         friction: 0.3,
     },
     saturn: {
-        texture: "/solar_textures/2k_saturn.jpg",
+        texture: "/textures/planets/2k_saturn.jpg",
         mass: 1.1,
         restitution: 0.5,
         friction: 0.4,
     },
     uranus: {
-        texture: "/solar_textures/2k_uranus.jpg",
+        texture: "/textures/planets/2k_uranus.jpg",
         mass: 0.9,
         restitution: 0.7,
         friction: 0.2,
     },
     neptune: {
-        texture: "/solar_textures/2k_neptune.jpg",
+        texture: "/textures/planets/2k_neptune.jpg",
         mass: 1.1,
         restitution: 0.6,
         friction: 0.3,
@@ -65,19 +65,19 @@ const PLANETS = {
 // Các loại thùng phi khác nhau
 const BARRELS = {
     red: {
-        texture: "/textures/red_barrel.jpg",
+        texture: "/textures/barrels/red_barrel.jpg",
         mass: 1.2,
         restitution: 0.3,
         friction: 0.8,
     },
     brown: {
-        texture: "/textures/brown_barrel.jpg",
+        texture: "/textures/barrels/brown_barrel.jpg",
         mass: 1.0,
         restitution: 0.4,
         friction: 0.7,
     },
     gray: {
-        texture: "/textures/gray_barrel.jpg",
+        texture: "/textures/barrels/gray_barrel.jpg",
         mass: 1.1,
         restitution: 0.35,
         friction: 0.75,

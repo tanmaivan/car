@@ -33,6 +33,7 @@ function App() {
                     <p>in free camera mode: press 2, 4, 6, 8 to move camera</p>
                     <p>press r to reset</p>
                     <p>press arrows for flips</p>
+                    <p>press n to toggle day/night</p>
                 </div>
 
                 <button

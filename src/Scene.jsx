@@ -18,6 +18,8 @@ import WeatherSound from "./WeatherSound";
 import { useLevaControls } from "./useLevaControls";
 import { Helicopter } from "./Helicopter";
 import { LightPole } from "./LightPole";
+import { DirectionalLight } from 'three';
+import { useSpring, animated } from '@react-spring/three';
 
 export function Scene({ onCameraModeChange }) {
     const [mode, setMode] = useState("orbit"); // 'orbit' | 'thirdPerson' | 'free' | 'topDown'
@@ -32,6 +34,15 @@ export function Scene({ onCameraModeChange }) {
         { position: [-3.4, 0, -3.5], rotation: [0, Math.PI / 2, 0] },
     ];
 
+    // Add state for day/night cycle
+    const [isDay, setIsDay] = useState(false);
+    
+    // Add spring animation for sun intensity and ambient light
+    const { sunIntensity, ambientIntensity } = useSpring({
+        sunIntensity: isDay ? 0.3 : 0,
+        ambientIntensity: isDay ? 0.5 : 0.2,
+        config: { duration: 2000 } // 2 second transition
+    });
 
     const speed = 0.1;
 
@@ -52,6 +63,11 @@ export function Scene({ onCameraModeChange }) {
             }
             if (e.key === "i") {
                 setMode("topDown");
+            }
+
+            // Add 'n' key for night/day toggle
+            if (e.key === "n") {
+                setIsDay(prev => !prev);
             }
 
             // Lưu key đang được nhấn
@@ -103,8 +119,13 @@ export function Scene({ onCameraModeChange }) {
 
     return (
         <Suspense fallback={null}>
+            {/* Dynamic Environment based on time of day */}
             <Environment
-                files={process.env.PUBLIC_URL + "/textures/envmap.hdr"}
+                files={process.env.PUBLIC_URL + 
+                    (isDay 
+                        ? "/textures/envmap.hdr"
+                        : "/textures/night_free_Ref.hdr")
+                }
                 background={"both"}
             />
 
@@ -155,11 +176,30 @@ export function Scene({ onCameraModeChange }) {
                 intensity={weather.snowIntensity}
             />
 
-            <ambientLight intensity={0.5} />
+            {/* Dynamic ambient light */}
+            <animated.ambientLight intensity={ambientIntensity} />
             
-            {/* <LightPole/> */}
+            {/* Animated sun light */}
+            <animated.directionalLight
+                position={[-10, 50, 10]}
+                intensity={sunIntensity}
+                castShadow
+                shadow-mapSize-width={2048}
+                shadow-mapSize-height={2048}
+                shadow-camera-far={50}
+                shadow-camera-left={-20}
+                shadow-camera-right={20}
+                shadow-camera-top={20}
+                shadow-camera-bottom={-20}
+            />
+            
+            {/* Light poles with dynamic intensity */}
             {lightPoleData.map((props, index) => (
-                <LightPole key={index} {...props} />
+                <LightPole 
+                    key={index} 
+                    {...props}
+                    lightIntensity={isDay ? 0 : 1} // Turn off during day
+                />
             ))}
 
         </Suspense>
