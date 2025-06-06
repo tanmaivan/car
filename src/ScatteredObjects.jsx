@@ -217,8 +217,10 @@ export function ScatteredObjects() {
 
     return (
         <>
-            {/* Luôn hiển thị chướng ngại vật di chuyển */}
-            <MovingObstacle position={[0, 0, 0]} />
+            {/* Chỉ hiển thị chướng ngại vật di chuyển khi được bật */}
+            {obstacles.showMovingObstacle && (
+                <MovingObstacle position={[0, 0, 0]} />
+            )}
 
             {objects.map((obj, index) => {
                 if (obj.type === "barrel") {

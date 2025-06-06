@@ -65,6 +65,7 @@ export function useLevaControls() {
 
     // Obstacle controls
     const obstacleControls = useControls("Obstacles", {
+        showMovingObstacle: { value: true, label: "Moving Obstacle" },
         boxCount: {
             value: 0,
             min: 0,
