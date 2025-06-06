@@ -17,6 +17,7 @@ import { Snow } from "./Snow";
 import WeatherSound from "./WeatherSound";
 import { useLevaControls } from "./useLevaControls";
 import { Helicopter } from "./Helicopter";
+import { LightPole } from "./LightPole";
 
 export function Scene({ onCameraModeChange }) {
     const [mode, setMode] = useState("orbit"); // 'orbit' | 'thirdPerson' | 'free' | 'topDown'
@@ -24,6 +25,13 @@ export function Scene({ onCameraModeChange }) {
     const cameraRef = useRef();
     const { weather } = useLevaControls();
     const pressedKeys = useRef({});
+    const lightPoleData = [
+        { position: [-0.3, 0, 0.4], rotation: [0, -Math.PI / 2, 0] },
+        { position: [-4.7, 0, 0.8], rotation: [0, 0, 0] },
+        { position: [-1.2, 0, -3.5], rotation: [0, Math.PI / 2, 0] },
+        { position: [-3.4, 0, -3.5], rotation: [0, Math.PI / 2, 0] },
+    ];
+
 
     const speed = 0.1;
 
@@ -122,6 +130,7 @@ export function Scene({ onCameraModeChange }) {
                 topDown={mode === "topDown"}
             />
             <ScatteredObjects />
+
             <Helicopter
                 center={[-2.64, 0, 0.03]}
                 radius={3}
@@ -140,10 +149,19 @@ export function Scene({ onCameraModeChange }) {
                 enabled={weather.showRain}
                 intensity={weather.rainIntensity}
             />
+
             <Snow
                 enabled={weather.showSnow}
                 intensity={weather.snowIntensity}
             />
+
+            <ambientLight intensity={0.5} />
+            
+            {/* <LightPole/> */}
+            {lightPoleData.map((props, index) => (
+                <LightPole key={index} {...props} />
+            ))}
+
         </Suspense>
     );
 }
