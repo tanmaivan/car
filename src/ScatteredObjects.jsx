@@ -20,45 +20,52 @@ const COLORS = [
 const PLANETS = {
     mercury: {
         texture: "/solar_textures/2k_mercury.jpg",
-        mass: 0.38, // Khối lượng so với Trái Đất
-        restitution: 0.3, // Độ nảy thấp
-        friction: 0.8, // Ma sát cao
+        mass: 0.38,
+        restitution: 0.3,
+        friction: 0.8,
+        radius: 0.095, // 0.38 / 4
     },
     venus: {
         texture: "/solar_textures/2k_venus_surface.jpg",
         mass: 0.91,
         restitution: 0.2,
         friction: 0.9,
+        radius: 0.2375, // 0.95 / 4
     },
     mars: {
         texture: "/solar_textures/2k_mars.jpg",
         mass: 0.38,
         restitution: 0.4,
         friction: 0.7,
+        radius: 0.1325, // 0.53 / 4
     },
     jupiter: {
         texture: "/solar_textures/2k_jupiter.jpg",
         mass: 2.5,
         restitution: 0.6,
         friction: 0.3,
+        radius: 2.8, // 11.2 / 4
     },
     saturn: {
         texture: "/solar_textures/2k_saturn.jpg",
         mass: 1.1,
         restitution: 0.5,
         friction: 0.4,
+        radius: 2.3625, // 9.45 / 4
     },
     uranus: {
         texture: "/solar_textures/2k_uranus.jpg",
         mass: 0.9,
         restitution: 0.7,
         friction: 0.2,
+        radius: 1.0, // 4.0 / 4
     },
     neptune: {
         texture: "/solar_textures/2k_neptune.jpg",
         mass: 1.1,
         restitution: 0.6,
         friction: 0.3,
+        radius: 0.97, // 3.88 / 4
     },
 };
 
@@ -69,18 +76,30 @@ const BARRELS = {
         mass: 1.2,
         restitution: 0.3,
         friction: 0.8,
+        size: {
+            radius: 0.0625, // 0.25 / 4
+            height: 0.2, // 0.8 / 4
+        },
     },
     brown: {
         texture: "/textures/brown_barrel.jpg",
         mass: 1.0,
         restitution: 0.4,
         friction: 0.7,
+        size: {
+            radius: 0.05, // 0.2 / 4
+            height: 0.15, // 0.6 / 4
+        },
     },
     gray: {
         texture: "/textures/gray_barrel.jpg",
         mass: 1.1,
         restitution: 0.35,
         friction: 0.75,
+        size: {
+            radius: 0.055, // 0.22 / 4
+            height: 0.175, // 0.7 / 4
+        },
     },
 };
 
@@ -93,7 +112,12 @@ function Barrel({ position }) {
     const [ref] = useCylinder(() => ({
         mass: randomBarrel.mass,
         position,
-        args: [0.2, 0.2, 0.6, 16], // [radiusTop, radiusBottom, height, segments]
+        args: [
+            randomBarrel.size.radius,
+            randomBarrel.size.radius,
+            randomBarrel.size.height,
+            16,
+        ],
         restitution: randomBarrel.restitution,
         friction: randomBarrel.friction,
     }));
@@ -102,7 +126,14 @@ function Barrel({ position }) {
 
     return (
         <mesh ref={ref} castShadow>
-            <cylinderGeometry args={[0.2, 0.2, 0.6, 16]} />
+            <cylinderGeometry
+                args={[
+                    randomBarrel.size.radius,
+                    randomBarrel.size.radius,
+                    randomBarrel.size.height,
+                    16,
+                ]}
+            />
             <meshStandardMaterial
                 map={texture}
                 roughness={0.7}
@@ -117,10 +148,17 @@ function Sphere({ position, radius = 0.2 }) {
     const randomPlanet =
         PLANETS[planetKeys[Math.floor(Math.random() * planetKeys.length)]];
 
+    // Tính toán vị trí y dựa trên bán kính của hành tinh
+    const adjustedPosition = [
+        position[0],
+        radius * randomPlanet.radius, // Đặt vị trí y bằng bán kính để hành tinh nằm trên mặt đất
+        position[2],
+    ];
+
     const [ref] = useSphere(() => ({
         mass: randomPlanet.mass,
-        position,
-        args: [radius],
+        position: adjustedPosition,
+        args: [radius * randomPlanet.radius],
         restitution: randomPlanet.restitution,
         friction: randomPlanet.friction,
     }));
@@ -129,7 +167,7 @@ function Sphere({ position, radius = 0.2 }) {
 
     return (
         <mesh ref={ref} castShadow>
-            <sphereGeometry args={[radius, 32, 32]} />
+            <sphereGeometry args={[radius * randomPlanet.radius, 32, 32]} />
             <meshStandardMaterial map={texture} />
         </mesh>
     );
@@ -158,7 +196,7 @@ export function ScatteredObjects() {
                         type: "barrel",
                         position: [
                             Math.random() * 10 - 5,
-                            0.3,
+                            0.3, // Vị trí y cố định cho thùng phi
                             Math.random() * 10 - 5,
                         ],
                     }));
@@ -189,7 +227,7 @@ export function ScatteredObjects() {
                         type: "sphere",
                         position: [
                             Math.random() * 10 - 5,
-                            0.2,
+                            0, // Vị trí y ban đầu là 0, sẽ được điều chỉnh trong component Sphere
                             Math.random() * 10 - 5,
                         ],
                     }));
