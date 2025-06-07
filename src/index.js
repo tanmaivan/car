@@ -28,10 +28,12 @@ function App() {
                     <p>press w a s d to move</p>
                     <p>press e to brake, q to honk horn</p>
                     <p>
-                        press j: orbit camera, k: perspective camera, l: free
-                        camera, i: top-down camera
+                        press 1: orbit camera, 2: perspective camera, 3: free
+                        camera, 4: top-down camera
                     </p>
-                    <p>in free camera mode: press 2, 4, 6, 8 to move camera</p>
+                    <p>in free camera mode: press j, i, k, l to move camera, 
+                        u and o for up and down
+                    </p>
                     <p>press r to reset</p>
                     <p>press arrows for flips</p>
                     <p>press n to toggle day/night</p>

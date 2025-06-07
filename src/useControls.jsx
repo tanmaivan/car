@@ -35,7 +35,7 @@ export const useControls = (vehicleApi, chassisApi) => {
 
         if (controls.e) {
             for (let i = 0; i < 4; i++) {
-                vehicleApi.setBrake(10, i);
+                vehicleApi.setBrake(3.5, i);
             }
         } else {
             for (let i = 0; i < 4; i++) {
