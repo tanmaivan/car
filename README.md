@@ -11,11 +11,11 @@
 
 ## 👥 Team Members
 
-| Student Name | Student ID | Student Role |
-|--------------|------------|--------------|
-| 1 | 2252XXXX | 1 |
-| 2 | 2252XXXX | 2 |
-| 3 | 2252XXXX | 3 |
+| Student Name | Student ID |
+|--------------|------------|
+|Nguyễn Phú Tài       | 22521280        |
+|Mai Văn Tân          | 22521568        |
+|Trần Lê Nguyên Trung | 22521568        |
 
 
 ## 🚗 3D Car Physics Simulation
